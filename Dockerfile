@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 COPY . .
 
 RUN npm install
-RUN npm run build
+RUN npm run build -- --mode=production
 
 # runner
 FROM alpine:latest
@@ -22,6 +22,6 @@ WORKDIR /home/static/hello-frontend
 
 COPY --from=builder /usr/src/app/dist .
 
-EXPOSE 3001
+EXPOSE 3000
 
-CMD ["thttpd", "-D", "-h", "0.0.0.0", "-p", "3000", "-d", "/home/static", "-u", "static", "-l", "-", "-M", "60"]
+CMD ["thttpd", "-D", "-h", "0.0.0.0", "-p", "3000", "-d", "/home/static/hello-frontend", "-u", "static", "-l", "-", "-M", "60"]
