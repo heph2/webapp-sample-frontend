@@ -1,0 +1,56 @@
+---
+name: Build and deploy webapp-sample in GKE
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_LOCATION: europe-west8
+  GKE_CLUSTER: terraform-gke
+  GKE_ZONE: europe-west8-c
+  DEPLOYMENT_NAME: frontend
+  IMAGE: webapp-sample-frontend
+  REPO: hello-repo
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish and Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+    - name: Docker Login to GAR
+      uses: docker/login-action@v2
+      with:
+        registry: 'europe-west8-docker.pkg.dev'
+        username: _json_key
+        password: ${{ secrets.GCP_CREDENTIALS }}
+
+    - name: Setup GKE credentials
+      uses: google-github-actions/get-gke-credentials@v0
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        location: ${{ env.GKE_ZONE }}
+
+    - name: Build
+      run: |-
+        docker build \
+          -t "$GKE_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO/$IMAGE:$GITHUB_SHA" \
+          --build-arg GITHUB_SHA="$GITHUB_SHA" \
+          --build-arg GITHUB_REF="$GITHUB_REF" \
+          .
+
+    - name: Publish
+      run: |-
+        docker push "$GKE_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO/$IMAGE:$GITHUB_SHA"
