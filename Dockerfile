@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 COPY . .
 
 RUN npm install
-RUN npm run build -- --mode=production
+RUN npm run build -- --mode=dev
 
 # runner
 FROM alpine:latest
