@@ -4,7 +4,7 @@ name: Build and deploy webapp-sample in GKE
 on:
   push:
     branches:
-      - master
+      - dev
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
@@ -12,7 +12,7 @@ env:
   GKE_CLUSTER: terraform-gke
   GKE_ZONE: europe-west8-c
   DEPLOYMENT_NAME: frontend
-  IMAGE: webapp-sample-frontend
+  IMAGE: webapp-sample-frontend-dev
   REPO: hello-repo
 
 jobs:
