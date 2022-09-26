@@ -1,6 +1,7 @@
 <template>
   <div class="hello">
     <h1>Happy counting!</h1>
+    <h2>STAGING!</h2>
     <p style="font-size:40px">{{count}} </p>
   </div>
 </template>
